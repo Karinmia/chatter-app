@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block head_addons %}
+<link rel="stylesheet" href="{{url_for('static', path='/css/signup.css')}}" type="text/css">
+{% endblock %}
+{% block content %}
+<div class="welcome-message">Please enter your name to continue</div>
+<input type="text" name="user_name" id="name" required
+  placeholder="John Doe"
+  hx-validate="true" 
+  hx-trigger="input changed">
+<div id="error-message" hx-swap="outerHTML"></div>
+<button type="submit" class="btn" id="signupBtn" 
+  hx-post="/signup"  
+  hx-include="[name='user_name']"
+  hx-ext="json-enc"
+  hx-target="#main-container"
+  hx-target-error="#error-message"
+  >
+  Continue
+</button>
+{% endblock %}

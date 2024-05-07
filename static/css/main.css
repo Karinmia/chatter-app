@@ -1,0 +1,50 @@
+/* Custom CSS for styling */
+:root {
+	/* --main-color: #3c0391; */
+	/* --main-light-color: #7c61a5; */
+	/* --contrast-color: #fefefa; */
+	--main-color: #7286D3;
+	--color-2: #8EA7E9;
+	--color-3: #E5E0FF;
+	--contrast-color: #FFF2F2;
+}
+
+body {
+	background-color: var(--contrast-color);
+	font-family: "Mulish", sans-serif;
+	font-style: normal;
+}
+
+.header {
+	/* margin: 0 auto; */
+	text-align: center;
+	padding: 20px 0px;
+}
+
+.app-title {
+	font-size: 30px;
+	font-weight: 600;
+	color: var(--main-color);
+}
+
+.btn {
+	align-items: center;
+	padding: 8px 12px;
+	border: 1px solid var(--main-color);
+	background: var(--main-color);
+	border-radius: 6px;
+	font-size: 16px;
+	color: var(--contrast-color);
+	font-weight: 400;
+	cursor: pointer;
+	outline: none;
+	text-decoration: none;
+	transition: all .15s;
+	overflow: hidden;
+}
+
+.btn:disabled {
+	border: 1px solid var(--color-2);
+	background: var(--color-2);
+	cursor: not-allowed;
+}

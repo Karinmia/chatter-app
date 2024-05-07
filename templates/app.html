@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block head_addons %}
+  <link rel="stylesheet" href="{{url_for('static', path='/css/app.css')}}" type="text/css">
+{% endblock %}
+
+{% block content %}
+<script>
+  let active_channel = "";
+</script>
+<!-- <div style="display: block;">Hi {{ user_name }}! Select a channel to continue</div> -->
+
+<div class="left-wrapper">
+  {% set active_channel = (channels | first).id %}
+  {% for channel in channels %}
+    <div class="channel" id="{{ channel.id }}" hx-get="/api/channels/{{channel.id}}/messages" hx-target="#messages" hx-swap="innerHTML">
+      <div class="channel-name">{{ channel.name }}</div>
+      <div class="channel-details">some details...</div>
+    </div>
+  {% endfor %}
+</div>
+<div class="right-wrapper">
+  <div class="messages-wrapper" id="messages">
+    {% include "messages.html" ignore missing with context %}
+  </div>
+  <div class="input-wrapper">
+    <input type="text" name="message" id="message"
+      placeholder="{{active_channel}}"
+      hx-trigger="input changed">
+    <button type="button" class="btn" hx-post="/send-message" id="sendMessage">
+      Send
+    </button>
+  </div>
+</div>
+{% endblock %}
+<!-- <script type="text/javascript">
+  console.log("here");
+  document.getElementById("error-message").addEventListener("htmx:beforeSwap", (event)=>{
+    console.log("inside EventListener");
+    console.log(event.detail.xhr.status);
+    console.log(event.detail);
+    // After server validation
+    if (event.detail.isError) {
+        event.detail.shouldSwap = true;
+        // No need to set new target since the form is already the target
+    } else {
+      // event.detail.target = "#main-container";
+      event.detail.target = null;
+      event.detail.shouldSwap = false;
+    }
+    return
+    // Else reset form and hide modal
+})
+</script> -->

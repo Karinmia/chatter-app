@@ -1,0 +1,11 @@
+{% if messages|length > 0 %}
+	{% for message in messages %}
+	<div class="message">
+		<div class="message-author">{{ message.author }}</div>
+		<div class="message-content">{{ message.content }}</div>
+		<div class="message-timestamp">{{ message.timestamp | ctime }}</div>
+	</div>
+	{% endfor %}
+{% else %}
+	<div class="empty">No messages here yet...</div>
+{% endif %}

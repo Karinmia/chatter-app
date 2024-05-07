@@ -1,0 +1,8 @@
+.DS_Store
+*.pyc
+__pycache__/
+venv/
+
+# Editor directories and files
+.idea
+.vscode
