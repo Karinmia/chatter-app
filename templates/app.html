@@ -5,25 +5,23 @@
 {% endblock %}
 
 {% block content %}
-<script>
-  let active_channel = "";
-</script>
-<!-- <div style="display: block;">Hi {{ user_name }}! Select a channel to continue</div> -->
-
-<div class="left-wrapper">
-  {% set active_channel = (channels | first).id %}
+<div id="left-wrapper">
   {% for channel in channels %}
-    <div class="channel" id="{{ channel.id }}" hx-get="/api/channels/{{channel.id}}/messages" hx-target="#messages" hx-swap="innerHTML">
+    <div id="{{ channel.id }}" class="channel"
+      hx-get="/api/channels/{{channel.id}}/messages" 
+      hx-target="#messages" hx-swap="innerHTML"
+    >
       <div class="channel-name">{{ channel.name }}</div>
       <div class="channel-details">some details...</div>
     </div>
   {% endfor %}
 </div>
-<div class="right-wrapper">
+<div id="right-wrapper">
+  <div id="select-channel">Select a chat to start messaging.</div>
   <div class="messages-wrapper" id="messages">
     {% include "messages.html" ignore missing with context %}
   </div>
-  <div class="input-wrapper">
+  <div id="input-wrapper">
     <input type="text" name="message" id="message"
       placeholder="{{active_channel}}"
       hx-trigger="input changed">
@@ -32,6 +30,28 @@
     </button>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function(event) {
+    // hide messages and users input unless a channel is selected
+    document.getElementById("messages").style.display = "none";
+    document.getElementById("input-wrapper").style.display = "none";
+  });
+
+  document.getElementById('left-wrapper').addEventListener('htmx:afterRequest', function(event) {
+      // remove the 'active' class from all channels
+      document.querySelectorAll('.channel.active').forEach(function(channel) {
+        channel.classList.remove('active');
+      });
+
+      // Add the active class to the clicked tab
+      event.target.classList.add('active');
+      
+      document.getElementById("select-channel").style.display = "none";
+      document.getElementById("messages").style.display = "flex";
+      document.getElementById("input-wrapper").style.display = "flex";
+  });
+</script>
 {% endblock %}
 <!-- <script type="text/javascript">
   console.log("here");

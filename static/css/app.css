@@ -12,10 +12,9 @@
 	gap: 8px;
 }
 
-.left-wrapper {
+#left-wrapper {
 	display: flex;
 	flex-direction: column;
-	/* gap: 10px; */
 	width: 25%;
 	border-right: 1px solid var(--main-color);
 	text-align: left;
@@ -27,6 +26,15 @@
 
 .channel {
 	padding: 6px 12px;
+}
+
+.channel.active {
+	background-color: var(--contrast-color);
+	color: var(--main-color);
+	/* background-color: var(--color-2); */
+	/* font-weight: 600; */
+	/* color: var(--contrast-color); */
+	/* color: blue; */
 }
 
 .channel:hover {
@@ -44,12 +52,19 @@
 	color: grey;
 }
 
-.right-wrapper {
+#right-wrapper {
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
 	/* max-width: 80%; */
 	width: 100%;
+}
+
+#select-channel {
+	font-size: 16px;
+	color: grey;
+	position: relative;
+	top: 50%;
 }
 
 .messages-wrapper {
@@ -92,7 +107,7 @@
 	text-align: right;
 }
 
-.input-wrapper {
+#input-wrapper {
 	display: flex;
 	gap: 10px;
 	margin-top: auto;
