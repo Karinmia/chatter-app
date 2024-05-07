@@ -2,12 +2,12 @@ from pydantic import BaseModel
 
 
 class Channel(BaseModel):
-    id = str
+    id: str
     name: str
 
 
 class Message(BaseModel):
-    channel_id = str
+    channel_id: str
     author: str
     content: str
     timestamp: int
