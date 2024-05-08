@@ -12,7 +12,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from app.routers.api import api_router
 from app.routers.web import web_router
 # from app.serializer import convert_doc_list
-from app.database import get_channels_list
+from app.database import get_channels_list, get_messages_mock
 from app.utils import generate_random_user_name, generate_session_token
 
 def timectime(s):
@@ -54,7 +54,7 @@ app.include_router(api_router, default_response_class=JSONResponse)
 @app.get("/", include_in_schema=False)
 async def main(request: Request):
     """Check if user is logged in and redirect to the relevant endpoint"""
-    print("--- main route")
+    
     context = {}
     session_token = request.cookies.get('X-Chatter-Token')
     if session_token:
@@ -62,46 +62,26 @@ async def main(request: Request):
         context['name'] = request.cookies.get('X-Chatter-Name', generate_random_user_name())
         # get the list of channels from database
         context['channels'] = await get_channels_list(request.app.db)
-        context['messages'] = [
-            {
-                "author": generate_random_user_name(),
-                "content": "Hi guys, I'm back from my vacation",
-                "timestamp": time.time()
-            },
-            {
-                "author": generate_random_user_name(),
-                "content": "Good to have you back! I hope you enjoyed your vacation.",
-                "timestamp": time.time()
-            },
-            {
-                "author": generate_random_user_name(),
-                "content": "Yeah, I'd like to visit Italy someday.",
-                "timestamp": time.time()
-            }
-        ]
+        context['messages'] = get_messages_mock()
     else:
         template_name = "signup.html"
-
-    print(f"context = {context}")
-    print(f"template_name = {template_name}")
+    
     return request.app.templates.TemplateResponse(
         request=request, name=template_name, context=context
     )
 
 
 @app.post("/signup")
-async def signup(user_name: Annotated[str, Body(embed=True)]):
+async def signup(user_name: Annotated[str, Body(embed=True)], request: Request):
     print("api :: signup")
     print(f"{user_name = }")
     if not user_name:
         return HTMLResponse('Name is required', status_code=400)
     
-    response = RedirectResponse('/', status_code=301)
+    response = request.app.templates.TemplateResponse(
+        request=request, name="app.html", context={}
+    )
     response.set_cookie(key="X-Chatter-Token", value=generate_session_token(), max_age=3600*24)
     response.set_cookie(key="X-Chatter-Name", value=user_name, max_age=3600*24)
+    response.headers['HX-Redirect'] = 'http://127.0.0.1:8000/'
     return response
-    # return templates.TemplateResponse(
-    #     request=request, name="app.html", context={'user_name': user_name},
-    #     status_code=status.HTTP_301_MOVED_PERMANENTLY,
-    #     headers={'Location': '/'}
-    # )
