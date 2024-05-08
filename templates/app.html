@@ -1,7 +1,43 @@
 {% extends "base.html" %}
 
 {% block head_addons %}
+  <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js"></script>
   <link rel="stylesheet" href="{{url_for('static', path='/css/app.css')}}" type="text/css">
+  <script type="text/javascript">
+    let selected_channel_id = null;
+
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    function displayMessage(messageData) {
+      var messageWrapper = document.createElement('div');
+      messageWrapper.classList.add('message');
+
+      var authorElement = document.createElement('div');
+      authorElement.classList.add('message-author');
+      authorElement.textContent = messageData.author;
+      messageWrapper.appendChild(authorElement);
+
+      var contentElement = document.createElement('div');
+      contentElement.classList.add('message-content');
+      contentElement.textContent = messageData.message;
+      messageWrapper.appendChild(contentElement);
+      
+      var timestampElement = document.createElement('div');
+      timestampElement.classList.add('message-timestamp');
+      // timestampElement.textContent = messageData.timestamp;
+      // timestampElement.textContent = new Date(message.timestamp).toLocaleString();
+      timestampElement.textContent = Date.now().toLocaleString();
+      messageWrapper.appendChild(timestampElement);
+
+      var messagesContainer = document.getElementById('messages');
+      messagesContainer.appendChild(messageWrapper);
+    }
+
+  </script>
 {% endblock %}
 
 {% block content %}
@@ -16,22 +52,22 @@
     </div>
   {% endfor %}
 </div>
-<div id="right-wrapper">
+<div id="right-wrapper" hx-ext="ws" ws-connect="/api/ws" hx-target="#messages" hx-swap="beforeend">
   <div id="select-channel">Select a chat to start messaging.</div>
   <div class="messages-wrapper" id="messages">
     {% include "messages.html" ignore missing with context %}
   </div>
   <div id="input-wrapper">
-    <input type="text" name="message" id="message"
-      placeholder="{{active_channel}}"
+    <input type="text" name="message" id="messageInput"
+      placeholder="type your message here..."
       hx-trigger="input changed">
-    <button type="button" class="btn" hx-post="/send-message" id="sendMessage">
+    <button type="button" class="btn" id="sendMessageBtn" ws-send>
       Send
     </button>
   </div>
 </div>
 
-<script>
+<script type="text/javascript">
   document.addEventListener("DOMContentLoaded", function(event) {
     // hide messages and users input unless a channel is selected
     document.getElementById("messages").style.display = "none";
@@ -39,36 +75,63 @@
   });
 
   document.getElementById('left-wrapper').addEventListener('htmx:afterRequest', function(event) {
-      // remove the 'active' class from all channels
-      document.querySelectorAll('.channel.active').forEach(function(channel) {
-        channel.classList.remove('active');
-      });
+    // remove the 'active' class from all channels
+    document.querySelectorAll('.channel.active').forEach(function(channel) {
+      channel.classList.remove('active');
+    });
 
-      // Add the active class to the clicked tab
-      event.target.classList.add('active');
-      
-      document.getElementById("select-channel").style.display = "none";
-      document.getElementById("messages").style.display = "flex";
-      document.getElementById("input-wrapper").style.display = "flex";
+    // add the active class to the clicked tab
+    event.target.classList.add('active');
+    // update selected channel id
+    selected_channel_id = event.target.id;
+    
+    document.getElementById("select-channel").style.display = "none";
+    document.getElementById("messages").style.display = "flex";
+    document.getElementById("input-wrapper").style.display = "flex";
+
+    // Set the ws-connect attribute with the variable value
+    // document.getElementById('messages').setAttribute('ws-connect', `/api/channels/${selected_channel_id}`);
+  });
+
+  // document.getElementById("right-wrapper").addEventListener("htmx:wsConnecting", (event) => {
+  //   console.log("--- inside htmx:wsConnecting event listener");
+  //   console.log(event)
+  // });
+
+  // document.getElementById("right-wrapper").addEventListener("htmx:wsOpen", (event) => {
+  //   console.log("--- inside htmx:wsOpen event listener");
+  //   console.log(event)
+  // });
+  
+  document.getElementById("right-wrapper").addEventListener("htmx:wsConfigSend", (event) => {
+    // console.log("--- inside htmx:wsConfigSend event listener");
+    // console.log(event.detail);
+    let messageInput = document.getElementById('messageInput');
+    let message = messageInput.value.trim();
+    
+    const user = getCookie("X-Chatter-Name");
+    // modify event
+    event.detail.messageBody = JSON.stringify({
+      "message": message,
+      "author": user,
+      "channel_id": selected_channel_id
+    });
+
+    // clear the input field after sending the message
+    messageInput.value = '';
+  });
+
+  document.getElementById("right-wrapper").addEventListener("htmx:wsBeforeMessage", (event) => {
+    // console.log("--- inside wsBeforeMessage event listener");
+    // console.log(event.detail);
+    
+    let data = JSON.parse(event.detail.message);
+    console.log("received new message: ", data, typeof data);  // type should be object
+    console.log("selected_channel_id = ", selected_channel_id, typeof selected_channel_id);
+    console.log("data['channel_id'] = ", data['channel_id'], typeof data['channel_id']);
+    if (selected_channel_id == data['channel_id']) {
+      displayMessage(data);
+    }
   });
 </script>
 {% endblock %}
-<!-- <script type="text/javascript">
-  console.log("here");
-  document.getElementById("error-message").addEventListener("htmx:beforeSwap", (event)=>{
-    console.log("inside EventListener");
-    console.log(event.detail.xhr.status);
-    console.log(event.detail);
-    // After server validation
-    if (event.detail.isError) {
-        event.detail.shouldSwap = true;
-        // No need to set new target since the form is already the target
-    } else {
-      // event.detail.target = "#main-container";
-      event.detail.target = null;
-      event.detail.shouldSwap = false;
-    }
-    return
-    // Else reset form and hide modal
-})
-</script> -->
