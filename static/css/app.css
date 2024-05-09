@@ -25,7 +25,10 @@
 }
 
 .channel {
-	padding: 6px 12px;
+	padding: 10px 12px;
+	display: flex;
+	justify-content: space-between;
+    align-items: center;
 }
 
 .channel.active {
@@ -47,9 +50,16 @@
 
 }
 
-.channel-details {
+/* .channel-details {
 	font-size: 14px;
 	color: grey;
+} */
+.channel .unread-messages {
+	display: none;
+	border-radius: 50%;
+	height: 15px;
+  	width: 15px;
+	background-color: var(--main-color);
 }
 
 #right-wrapper {
