@@ -37,6 +37,19 @@
       messagesContainer.appendChild(messageWrapper);
     }
 
+    function displayUnreadMessages(channel_id) {
+      var channelElement = document.getElementById(channel_id);
+      var unreadMsg = channelElement.querySelectorAll('.unread-messages');
+      if (unreadMsgElement.length > 0) unreadMsg[0].style.display = 'block';
+    }
+
+    function clearUnreadMessages(channel_id) {
+      var channelElement = document.getElementById(channel_id);
+      var unreadMsgElement = channelElement.querySelectorAll('.unread-messages');
+      if (unreadMsgElement.length > 0) unreadMsgElement[0].style.display = 'none';
+
+      return true;
+    }
   </script>
 {% endblock %}
 
@@ -46,9 +59,11 @@
     <div id="{{ channel.id }}" class="channel"
       hx-get="/api/channels/{{channel.id}}/messages" 
       hx-target="#messages" hx-swap="innerHTML"
+      hx-trigger="click"
+      hx-on-htmx-before-request="clearUnreadMessages('{{channel.id}}')"
     >
       <div class="channel-name">{{ channel.name }}</div>
-      <div class="channel-details">some details...</div>
+      <div class="unread-messages"></div>
     </div>
   {% endfor %}
 </div>
@@ -92,20 +107,8 @@
     // Set the ws-connect attribute with the variable value
     // document.getElementById('messages').setAttribute('ws-connect', `/api/channels/${selected_channel_id}`);
   });
-
-  // document.getElementById("right-wrapper").addEventListener("htmx:wsConnecting", (event) => {
-  //   console.log("--- inside htmx:wsConnecting event listener");
-  //   console.log(event)
-  // });
-
-  // document.getElementById("right-wrapper").addEventListener("htmx:wsOpen", (event) => {
-  //   console.log("--- inside htmx:wsOpen event listener");
-  //   console.log(event)
-  // });
   
   document.getElementById("right-wrapper").addEventListener("htmx:wsConfigSend", (event) => {
-    // console.log("--- inside htmx:wsConfigSend event listener");
-    // console.log(event.detail);
     let messageInput = document.getElementById('messageInput');
     let message = messageInput.value.trim();
     
@@ -122,15 +125,14 @@
   });
 
   document.getElementById("right-wrapper").addEventListener("htmx:wsBeforeMessage", (event) => {
-    // console.log("--- inside wsBeforeMessage event listener");
-    // console.log(event.detail);
-    
     let data = JSON.parse(event.detail.message);
     console.log("received new message: ", data, typeof data);  // type should be object
     console.log("selected_channel_id = ", selected_channel_id, typeof selected_channel_id);
     console.log("data['channel_id'] = ", data['channel_id'], typeof data['channel_id']);
     if (selected_channel_id == data['channel_id']) {
       displayMessage(data);
+    } else {
+      displayUnreadMessages(data['channel_id']);
     }
   });
 </script>
