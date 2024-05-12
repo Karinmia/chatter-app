@@ -39,8 +39,8 @@
 
     function displayUnreadMessages(channel_id) {
       var channelElement = document.getElementById(channel_id);
-      var unreadMsg = channelElement.querySelectorAll('.unread-messages');
-      if (unreadMsgElement.length > 0) unreadMsg[0].style.display = 'block';
+      var unreadMsgElement = channelElement.querySelectorAll('.unread-messages');
+      if (unreadMsgElement.length > 0) unreadMsgElement[0].style.display = 'block';
     }
 
     function clearUnreadMessages(channel_id) {
