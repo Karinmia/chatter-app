@@ -11,13 +11,13 @@
   hx-trigger="input changed">
 <div id="error-message" hx-swap="outerHTML"></div>
 <button type="submit" class="btn" id="signupBtn" 
+  hx-trigger="click, keyup[key=='Enter'] from:input"
   hx-post="/signup"  
   hx-include="[name='user_name']"
   hx-ext="json-enc"
   hx-target="#main-container"
   hx-target-error="#error-message"
-  hx-swap="none"
-  >
+  hx-swap="none">
   Continue
 </button>
 {% endblock %}
