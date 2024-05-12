@@ -9,16 +9,15 @@
 	text-align: center;
 	display: flex;
 	flex-direction: row;
-	gap: 8px;
 }
 
 #left-wrapper {
 	display: flex;
 	flex-direction: column;
 	width: 25%;
-	border-right: 1px solid var(--main-color);
+	border-right: 1px solid var(--blue-light);
 	text-align: left;
-	background-color: var(--color-3);
+	background-color: var(--main-color);
 	padding: 20px 0px;
 	border-top-left-radius: 10px 10px;
 	border-bottom-left-radius: 10px 10px;
@@ -29,37 +28,27 @@
 	display: flex;
 	justify-content: space-between;
     align-items: center;
+	color: var(--text-color);
 }
 
 .channel.active {
-	background-color: var(--contrast-color);
-	color: var(--main-color);
-	/* background-color: var(--color-2); */
-	/* font-weight: 600; */
-	/* color: var(--contrast-color); */
-	/* color: blue; */
+	background-color: var(--blue-light);
+	color: var(--accent-color);
 }
 
 .channel:hover {
-	background-color: var(--contrast-color);
-	color: var(--main-color);
+	background-color: var(--blue-light);
+	color: var(--accent-color);
 	cursor: pointer;
 }
 
-.channel-name {
-
-}
-
-/* .channel-details {
-	font-size: 14px;
-	color: grey;
-} */
 .channel .unread-messages {
 	display: none;
 	border-radius: 50%;
 	height: 15px;
   	width: 15px;
-	background-color: var(--main-color);
+	/* background-color: var(--main-color); */
+	background-color: var(--accent-color);
 }
 
 #right-wrapper {
@@ -68,6 +57,7 @@
 	gap: 8px;
 	/* max-width: 80%; */
 	width: 100%;
+	background-color: #F6F7F9;
 }
 
 #select-channel {
@@ -96,35 +86,47 @@
 }
 
 .message {
-	background-color: var(--contrast-color);
+	background-color: #C4D8E2;
 	border-radius: 6px;
 	padding: 4px 6px;
 	text-align: left;
 	max-width: 96%;
+	color: var(--text-color);
 }
 
 .message .message-author {
 	font-size: 14px;
-	color: var(--main-color);
+	color: #4D85BD;
+	background-image: linear-gradient(#4D85BD, var(--text-color));
+	background: rgba(0, 0, 0, 0) radial-gradient(circle, #23966c, #faaa54, #e23b4a, #db0768, #360670) repeat scroll 0 0;
+    background-size: 100%;
+	background-clip: text;
+	-webkit-background-clip: text;
+    -moz-background-clip: text;
+    -webkit-text-fill-color: transparent; 
+    -moz-text-fill-color: transparent;
 }
 
 .message .message-content {
 	font-size: 16px;
-	/* color: grey; */
 }
 
 .message .message-timestamp {
 	font-size: 14px;
-	color: grey;
 	text-align: right;
+}
+
+.message.sent-by-me {
+	background-color: var(--color-green);
+	margin-left: auto;
 }
 
 #input-wrapper {
 	display: flex;
 	gap: 10px;
 	margin-top: auto;
-	margin-bottom: 8px;
-	padding-right: 8px;
+	margin-bottom: 10px;
+	padding: 0 16px;
 }
 
 input {
